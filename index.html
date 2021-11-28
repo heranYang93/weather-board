@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="./Assets/style.css" />
+    <link rel="icon" href="https://www.freeiconspng.com/thumbs/weather-icon-png/weather-icon-png-2.png">
+    <style>@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap');</style>
+</head>
+
+<body>
+
+    <header class='headerBlue'>
+        <h1 class='headerText'>
+            Weather Dashboard
+        </h1>
+    </header>
+
+    <main>
+        <section class='left'>
+
+            <form class="locationInputForm">
+                <label class="form-label" for="locationInput">Search for a City</label>
+                <input class="form-input" id="inputBlock" name="locationInput" type="text" placeholder=" Try searching: San Diego" autofocus="true" />
+                <button class="form-btn" type="submit">Search</button>
+            </form>
+
+            <div class = 'divisionLine'></div>
+
+            <!-- Populate this section with js -->
+            <ul class = 'historyCityList'></ul>
+
+        </section>
+
+        <section class='right'>
+            <section class='currentWeather'></section>
+            <ul class='forecastData'></ul>
+        </section>
+
+    </main>
+    
+    <script src= 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js'></script>
+    <script src = './Assets/script.js'></script>
+
+</body>
+</html>
