@@ -96,10 +96,10 @@ main{
     border: 0px;
     text-align: center;
     font-style: oblique;
+    transition: 1s ease-in;
 }
 
 .form-input:hover{
-    transition: 2s cubic-bezier(0.075, 0.82, 0.165, 1);
     background-color: var(--indigo);
 }
 
@@ -116,11 +116,11 @@ main{
     background-color: white;
     color: var(--navy);
     font-weight: 900;
+    transition: 1s ease-in;
 }
 
 .form-btn:hover{
     border: 0px;
-    transition: 2s cubic-bezier(0.075, 0.82, 0.165, 1);
     background-color: var(--indigo);
     color: var(--gargoyleGas);
 }
@@ -143,17 +143,19 @@ main{
     list-style: none;
 }
 
-.historyCityList > * {
+#cityBtn {
     margin-top: 20px;
     width: 100%;
     height: 2rem;
-    background-color: white;
-    border-radius: 5px;
     text-align: center;
-    border: solid 0.1px var(--blueBolt);
-    border-radius: 1rem;
+    border:0px;
+    background-color: white;
     color: #00bbf9;
-    font-weight: 100;
+    font-weight:600;
+}
+
+#cityBtn:hover{
+    border-bottom: solid 1px var(--navy);
 }
 
 .right{
