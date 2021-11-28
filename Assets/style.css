@@ -127,6 +127,39 @@ main{
     justify-content: space-around;
 }
 
+.today{
+    font-size: 1.2rem;
+    width: 50%;
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.today > img{
+    margin-left: 10px;
+    transform: translateY(-5px);
+    height: 4rem;
+    object-fit: contain;
+}
+
+.taller{
+    font-size: 2rem;
+}
+
+.bolder{
+    font-weight: bolder;
+}
+
+#uvBlock{
+    display: block;
+    text-align: center;
+    width: 4rem;
+    background-color: pink;
+    border-radius: 5px;
+    color:black;
+    font-weight: bolder;
+    margin-left: 20px;
+}
+
 .forcastText{
     color: #B2B1B9;
 }
@@ -151,19 +184,12 @@ main{
     justify-content: space-around;
 }
 
-.forcastDate {
-    font-weight: bolder;
-    color:white;
+.forcastText{
+    color: pink;
 }
 
-.forcastIcon {
-    width: 30px;
-    height: 30px;
-    background-image: url('https://uxwing.com/wp-content/themes/uxwing/download/27-weather/weather.png');
-    background-color: #FFD523;
-    background-repeat: cover;
-}
-
-.forcastInfo{
-    color: white;
+.forcastText > img {
+    transform: translateY(10px);
+    height: 2rem;
+    object-fit: contain;
 }

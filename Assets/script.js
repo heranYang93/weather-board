@@ -1,29 +1,37 @@
-var formEl = document.querySelector('.locationInputForm')
-var inputEl = document.getElementById('inputBlock')
-var buttonListEl = document.querySelector('.historyCityList')
-var cityBtnEl = document.getElementById('cityBtn')
-var currentWeatherEl = document.querySelector('.currentWeather')
-var forecastListEl = document.querySelector('.forecastData')
+// DOM elements
+var formEl = document.querySelector('.locationInputForm') // form and its input
+var inputEl = document.getElementById('inputBlock') // form and its input
+var buttonListEl = document.querySelector('.historyCityList') // list to append history button
+var currentWeatherEl = document.querySelector('.currentWeather') // current weather section
+var forecastListEl = document.querySelector('.forecastData') // weather forecast section
 
-localStorage.setItem('locationArray', JSON.stringify([]))
-var updatedLocationArray = JSON.parse(localStorage.getItem('locationArray'))
-var locationDisplay = updatedLocationArray[updatedLocationArray.length - 1]||'Chicago'
+//data
+localStorage.setItem('locationArray', JSON.stringify([])) //Initiate the storage with a blank list of city history
 
-const btnAmount = 7
-const apiKey = 'ed8cabd609d17e042c27c27da1308d59'
-var coordUrl = `https://api.openweathermap.org/data/2.5/weather?q=${locationDisplay}&appid=${apiKey}`
-const today = moment().format("Do MMM YYYY")
+//functional input
+var locationHistory = JSON.parse(localStorage.getItem('locationArray')) //What is in the history list?
+var locationDisplay = 'Chicago' //Use Chicago as a default city
+const btnAmount = 7 //only display 7 items in the search history
+const apiKey = 'ed8cabd609d17e042c27c27da1308d59' //API key for open weather map
+var coordUrl = `https://api.openweathermap.org/data/2.5/weather?q=${locationDisplay}&appid=${apiKey}` //URL to fetch the coordinate of a city
+const today = moment().format("Do MMM YYYY") //today's date
 
+//functions 
 function submitNewLoc(event){
-    event.preventDefault();
+    //When the button is pressed to submit!
+    event.preventDefault();//prevent default
     
-    var newLocation = inputEl.value.trim();
+    var newLocation = inputEl.value.trim();//fix the input (currently only taking single-word cities)
 
-    if (newLocation){
-        // update current location list
+    if ((newLocation)&&(newLocation!== locationDisplay)){ //When an input is given and is different from the city that is currently showing
+        
+        // update the location to display
+        locationDisplay = newLocation
+
+        // put this city into the location history list
         updateStorage(newLocation)
 
-        // render cities in the list
+        // make history buttons
         renderCityButton()
 
         // render the data
@@ -33,7 +41,7 @@ function submitNewLoc(event){
         inputEl.value = ''
     }
     else{
-        window.alert('Please insert a location');
+        window.alert('Please insert a new location');
     }
 
 }
@@ -64,31 +72,32 @@ function renderCityButton () {
 
 function updateStorage(newLocation){
     // this newLocation is in the storage
-    newInArrayId = updatedLocationArray.indexOf(newLocation)
+    newInArrayId = locationHistory.indexOf(newLocation)
 
     // history already contains this new input
     if (newInArrayId === -1) {
-        updatedLocationArray.push(newLocation)
+        locationHistory.push(newLocation)
     }
     else{
-        updatedLocationArray.splice(newInArrayId,1)
-        updatedLocationArray.push(newLocation)
+        locationHistory.splice(newInArrayId,1)
+        locationHistory.push(newLocation)
     }
 
-    localStorage.setItem('locationArray', JSON.stringify(updatedLocationArray))
+    localStorage.setItem('locationArray', JSON.stringify(locationHistory))
 }
 
 function updateLocationDisplay (event){
 
     event.preventDefault()
     locationDisplay = event.target.getAttribute('data-location')
+    render()
 }
 
-async function getCoord(){
+async function getCoord(_coordUrl){
 
     var coord
 
-    var temp = await fetch(coordUrl)
+    var temp = await fetch(_coordUrl)
 
         .then(function (fetchedResponse){
             return fetchedResponse.json()
@@ -105,10 +114,10 @@ async function getCoord(){
     return coord
 }
 
-async function getWeather(coord){
+async function getWeather(_coord){
 
-    var oneCallUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${coord[0]}&lon=${coord[1]}&exclude=minutely,hourly&appid=${apiKey}`
-    var returnData
+    var oneCallUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${_coord[0]}&lon=${_coord[1]}&exclude=minutely,hourly&appid=${apiKey}`
+    var returnWeatherData
 
     var weather = await fetch(oneCallUrl)
 
@@ -117,78 +126,77 @@ async function getWeather(coord){
         })
 
         .then(function(data){
-            returnData = [data.current, ... data.daily].slice(0,6)
+            returnWeatherData = [data.current, data.daily.slice(0,5)]
         })
 
         .catch(function(error){
             alert('Weather data error')
         })
     
-
-    return returnData
-
+    return returnWeatherData
 }
 
-function renderPage(weather){
+function renderPage(_weather){
 
     currentWeatherEl.innerHTML =''
     forecastListEl.innerHTML =''
 
-    weather.forEach(function (singleDay,id){
+    console.log(_weather)
 
-        var uviColor
-        var todayUVI = singleDay.uvi
-        switch (uviColor){
-            case (todayUVI<=2):
-                uviColor = 'green'
-                break
-            case (todayUVI<=5):
-                uviColor = 'yellow'
-                break
-            case (todayUVI<=7):
-                uviColor = 'amber'
-                break
-            case (todayUVI<=10):
-                uviColor = 'red'
-                break
-            case (todayUVI>10):
-                uviColor = 'purple'
-                break
-        }
+    curWeather = _weather[0]
+    // current day
+    var uviColor
+    var todayUVI = curWeather.uvi
+    iconData = curWeather.weather[0].icon
+    iconURL = `http://openweathermap.org/img/wn/${iconData}@2x.png`
 
-        if (id === 0){
-            // current day
-            currentWeatherEl.innerHTML = `
-            <p class = 'todayTitle'> ${locationDisplay} ${today} ${singleDay.weather[0].icon}</p>
-            <p class = 'todayTemp'>Temperature: ${singleDay.temp} F</p>
-            <p class = 'todayWind'>Wind Speed: ${singleDay.wind_speed} MPH</p>
-            <p class = 'todayHumi'>Humidity: ${singleDay.humidity} %</p>
-            <div class = 'todayUV ${uviColor}'>UV Index: 
-                <p class = 'todayUV'>${singleDay.uvi}</p>
-            </div>
-            `
-        }
-        else{
-            var thisDate = moment().add(id, 'days').format("Do MMM YYYY")
-            var listItem = document.createElement('li')
-            listItem.innerHTML = `
-            <p class = 'forcastText bolder'> ${thisDate} ${singleDay.weather[0].icon}</p>
-            <p class = 'forcastText'>${singleDay.weather[0].icon}</p>
-            <p class = 'forcastText'>Temp: ${singleDay.temp} F</p>
+    if (todayUVI <= 2){
+        uviColor = 'green'
+    }
+    else if (todayUVI <= 5){
+        uviColor = 'yellow'
+    }
+    else if (todayUVI <= 7){
+        uviColor = 'amber'
+    }
+    else if (todayUVI <= 10){
+        uviColor = 'red'
+    }
+    else {
+        uviColor = 'purple'
+    }
+
+    currentWeatherEl.innerHTML = `
+        <p class = 'today taller bolder'> ${locationDisplay} ${today}<img src = ${iconURL}> </p>
+        <p class = 'today'>Temperature: ${curWeather.temp} F</p>
+        <p class = 'today'>Wind Speed: ${curWeather.wind_speed} MPH</p>
+        <p class = 'today'>Humidity: ${curWeather.humidity} %</p>
+        <p class = 'today'>UV Index:<span id='uvBlock'> ${todayUVI} </span></p>
+    `
+    document.getElementById('uvBlock').style.backgroundColor = uviColor
+
+    _weather[1].forEach(function (singleDay,id){
+        var thisDate = moment().add(id, 'days').format("Do MMM YYYY")
+        var listItem = document.createElement('li')
+        listItem.innerHTML = `
+            <p class = 'forcastText bolder'> ${thisDate} <img src = ${iconURL}></p>
+            <p class = 'forcastText'>Temp: ${singleDay.temp.day} F</p>
             <p class = 'forcastText'>Wind: ${singleDay.wind_speed} MPH</p>
             <p class = 'forcastText'>Humidity: ${singleDay.humidity} %</p>
             `
-            listItem.setAttribute('class','forcast')
-            forecastListEl.appendChild(listItem)
-        }
+        listItem.setAttribute('class','forcast')
+        forecastListEl.appendChild(listItem)
     })
 }
 
 async function render(){
     
-    var coord = await getCoord()
-    var weather = await getWeather(coord)
-    renderPage(weather)
+    var coordUrl = `https://api.openweathermap.org/data/2.5/weather?q=${locationDisplay}&appid=${apiKey}` //URL to fetch the coordinate of a city
+    var currentCoord = await getCoord(coordUrl)
+    var currentWeather = await getWeather(currentCoord)
+    renderPage(currentWeather)
 }
 
+// main program
+render()
 formEl.addEventListener('submit', submitNewLoc);
