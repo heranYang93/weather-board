@@ -60,25 +60,28 @@ function renderCityButton () {
     }
 
     arrayToRender.forEach(singleCity => {
-        // make single button
+        // in this list of search history, go through the list and make each single history a button
         var thisCityBtn = document.createElement('button');
         thisCityBtn.innerHTML = singleCity
         thisCityBtn.setAttribute('id','cityBtn');
-        thisCityBtn.setAttribute('data-location',singleCity);
-        thisCityBtn.addEventListener('click', updateLocationDisplay);
+        thisCityBtn.setAttribute('data-location',singleCity);// git each button a unique name that indicates the city it represents
+        thisCityBtn.addEventListener('click', updateLocationDisplay);// let each button sense the 'click'
         buttonListEl.appendChild(thisCityBtn)
     });
 }
 
 function updateStorage(newLocation){
     // this newLocation is in the storage
+
+    // see what is the index of this new location / index of will return the index if this location already exists
     newInArrayId = locationHistory.indexOf(newLocation)
 
-    // history already contains this new input
+    // history does not contain this new input
     if (newInArrayId === -1) {
         locationHistory.push(newLocation)
     }
     else{
+        // history already has this new input, put it in the first of the list
         locationHistory.splice(newInArrayId,1)
         locationHistory.push(newLocation)
     }
@@ -88,15 +91,22 @@ function updateStorage(newLocation){
 
 function updateLocationDisplay (event){
 
+    // update the global variable of current city
     event.preventDefault()
+
+    // read the location property of each button and update the global display variable to match that
     locationDisplay = event.target.getAttribute('data-location')
+
+    // render all weather info to the page
     render()
 }
 
 async function getCoord(_coordUrl){
-
+    //get the coordinate of a city
+    
     var coord
 
+    // pull the data and extract the coordinate data, if this step fail, it means that the input location is no good
     var temp = await fetch(_coordUrl)
 
         .then(function (fetchedResponse){
@@ -115,6 +125,8 @@ async function getCoord(_coordUrl){
 }
 
 async function getWeather(_coord){
+
+    //use the pulled coordinate to pull the data from this component called 'oneCall'
 
     var oneCallUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${_coord[0]}&lon=${_coord[1]}&exclude=minutely,hourly&appid=${apiKey}`
     var returnWeatherData
