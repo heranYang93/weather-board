@@ -54,7 +54,7 @@ function renderCityButton () {
     // get the location array from local storage
     var arrayToRender = JSON.parse(localStorage.getItem('locationArray'))
 
-    // only take first 7 items
+    // only take first 7 histories
     if (arrayToRender.length >= btnAmount){
         arrayToRender.reverse().splice(btnAmount, (arrayToRender.length-7+1))
     }
